@@ -25,7 +25,10 @@ With it an integrated QR maker to print a current item price with its discounts.
 
 To build and run the app, use:
 
+while in 'DynamicDiscountManager\src\main\java' run following commands on your terminal:
 ```shell
+javac sa/edu/kau/fcit/cpit252/project/App.java
+java sa.edu.kau.fcit.cpit252.project.App
 ```
 
 ## Screenshots
