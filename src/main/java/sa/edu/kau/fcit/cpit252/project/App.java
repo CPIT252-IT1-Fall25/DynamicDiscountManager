@@ -38,8 +38,8 @@ public class App {
             System.out.println("Insertion Into sql \n" + insertSQL);
             
             try (PreparedStatement pstatement = connection.prepareStatement(insertSQL)) {
-                pstatement.setString(1, "John Doe");
-                pstatement.setString(2, "john@example.com");
+                pstatement.setString(1, "Ibrahim Aljohani");
+                pstatement.setString(2, "Ibrahim@example.com");
                 pstatement.executeUpdate();
             }
             
