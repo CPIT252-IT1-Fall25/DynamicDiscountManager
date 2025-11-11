@@ -40,6 +40,11 @@
       <artifactId>junit-jupiter-params</artifactId>
       <scope>test</scope>
     </dependency>
+     <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>42.7.0</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -83,6 +88,14 @@
         <plugin>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.6.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.6.2</version>
+          <configuration>
+            <mainClass>sa.edu.kau.fcit.cpit252.project.App</mainClass>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
