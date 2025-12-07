@@ -10,9 +10,6 @@ import java.util.Map;
 import sa.edu.kau.fcit.cpit252.project.DB.Database; 
 import sa.edu.kau.fcit.cpit252.project.DB.Table;
 
-/**
- * Hello world!
- */
 public class App {
     public static void main(String[] args) {
         try (Connection connection = Database.getDBConnection(); Statement statement = connection.createStatement()){
