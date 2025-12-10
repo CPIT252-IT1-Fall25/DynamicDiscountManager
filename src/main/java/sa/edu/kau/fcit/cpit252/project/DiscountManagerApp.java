@@ -8,8 +8,8 @@ import sa.edu.kau.fcit.cpit252.project.DB.Database;
 import sa.edu.kau.fcit.cpit252.project.cli.DiscountCLI;
 import sa.edu.kau.fcit.cpit252.project.domain.Product;
 import sa.edu.kau.fcit.cpit252.project.observer.InventoryManager;
+import sa.edu.kau.fcit.cpit252.project.observer.TerminalUI;
 import sa.edu.kau.fcit.cpit252.project.persistence.ProductRepository;
-import sa.edu.kau.fcit.cpit252.project.ui.TerminalUI;
 
 public class DiscountManagerApp {
 
