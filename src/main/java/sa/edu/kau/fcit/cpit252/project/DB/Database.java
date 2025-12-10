@@ -11,7 +11,7 @@ public class Database{
 
     //singleton
     public static Connection getDBConnection()throws SQLException{
-        if(DBConnection != null)
+        if(DBConnection != null && !DBConnection.isClosed())
             return DBConnection;
         else{
              return CreateConnection();

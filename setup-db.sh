@@ -8,8 +8,6 @@ GRANT ALL PRIVILEGES ON DATABASE "DynamicDiscountDB" TO admin;
 \q
 EOF
 
-psql -h localhost -U admin -d DynamicDiscountDB -f src/main/resources/db/schema.sql
-
-psql -h localhost -U admin -d DynamicDiscountDB -f src/main/resources/db/data.sql
+psql -h localhost -U admin -d DynamicDiscountDB -f init.sql
 
 echo "Database setup complete!"
