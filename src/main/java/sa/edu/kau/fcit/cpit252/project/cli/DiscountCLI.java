@@ -1,19 +1,18 @@
 package sa.edu.kau.fcit.cpit252.project.cli;
 
-import sa.edu.kau.fcit.cpit252.project.domain.Product;
-import sa.edu.kau.fcit.cpit252.project.discount.DiscountCalculator;
-import sa.edu.kau.fcit.cpit252.project.observer.InventoryManager;
-import sa.edu.kau.fcit.cpit252.project.persistence.ProductRepository;
-import sa.edu.kau.fcit.cpit252.project.DB.Database;
-
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
 
+import sa.edu.kau.fcit.cpit252.project.observer.InventoryManager;
+import sa.edu.kau.fcit.cpit252.project.persistence.ProductRepository;
+
+/**
+ * Main CLI router - delegates to individual command classes
+ */
 public class DiscountCLI {
-    private InventoryManager inventory;
-    private ProductRepository repo;
-    private Scanner scanner;
+    private final InventoryManager inventory;
+    private final ProductRepository repo;
+    private final Scanner scanner;
 
     public DiscountCLI(InventoryManager inventory, ProductRepository repo) {
         this.inventory = inventory;
@@ -34,11 +33,13 @@ public class DiscountCLI {
 
             try {
                 switch (choice) {
-                    case "1" -> viewProducts();
-                    case "2" -> reviewSuggestions();
-                    case "3" -> applyCustomDiscount();
-                    case "4" -> advanceTime();
-                    case "5" -> {
+                    case "1" -> executeCommand(new ViewProductsCommand(inventory));
+                    case "2" -> executeCommand(new ReviewSuggestionsCommand(inventory, repo, scanner));
+                    case "3" -> executeCommand(new ApplyCustomDiscountCommand(inventory, repo, scanner));
+                    case "4" -> executeCommand(new AdvanceTimeCommand(inventory));
+                    case "5" -> executeCommand(new AddProductCommand(inventory, repo, scanner));
+                    case "6" -> executeCommand(new RemoveProductCommand(inventory, repo, scanner));
+                    case "7" -> {
                         running = false;
                         System.out.println("Shutting down gracefully...");
                     }
@@ -50,89 +51,20 @@ public class DiscountCLI {
         }
     }
 
+    private void executeCommand(Command command) throws SQLException {
+        command.execute();
+    }
+
     private void showMenu() {
         System.out.println("\n┌─ MENU (" + inventory.getCurrentDate() + ") ─┐");
         System.out.println("│ [1] View all products");
         System.out.println("│ [2] Review discount suggestions");
         System.out.println("│ [3] Apply custom discount");
         System.out.println("│ [4] Advance time (simulate days)");
-        System.out.println("│ [5] Exit");
+        System.out.println("│ [5] Add new product");
+        System.out.println("│ [6] Remove product");
+        System.out.println("│ [7] Exit");
         System.out.print("└─ Choice: ");
     }
-
-    private void viewProducts() {
-        System.out.println("\n╔════ INVENTORY ════╗");
-        inventory.allProducts().values().forEach(p -> {
-            int days = p.daysUntilExpiry(inventory.getCurrentDate());
-            String status = days < 0 ? "🔴 EXPIRED" : days <= 3 ? "🟠 DANGER" : "🟢 OK";
-            System.out.printf("  %s | %s | Stock:%d | Exp:%s | Price:%.2f → %.2f (%.1f%%)%n",
-                status, p.name, p.stock, p.expiryDate, p.basePrice, p.getFinalPrice(), p.appliedDiscount);
-        });
-        System.out.println("╚═══════════════════╝");
-    }
-
-    private void reviewSuggestions() {
-        System.out.println("\n╔════ SUGGESTIONS ════╗");
-        inventory.allProducts().values().forEach(p -> {
-            var suggestion = DiscountCalculator.suggest(p, inventory.getCurrentDate());
-            System.out.println("  → " + suggestion);
-        });
-        System.out.println("╚═════════════════════╝");
-
-        System.out.print("\nApply suggestion? (product_id or skip): ");
-        String input = scanner.nextLine().trim();
-        if (!input.equalsIgnoreCase("skip") && !input.isEmpty()) {
-            try {
-                int pid = Integer.parseInt(input);
-                Product p = inventory.getProduct(pid);
-                if (p != null) {
-                    var sug = DiscountCalculator.suggest(p, inventory.getCurrentDate());
-                    inventory.applyDiscount(pid, sug.suggestedDiscount);
-                    persistChanges(pid);
-                    System.out.println("✅ Applied " + sug.suggestedDiscount + "% discount");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("❌ Invalid ID");
-            } catch (SQLException e) {
-                System.err.println("DB error: " + e.getMessage());
-            }
-        }
-    }
-
-    private void applyCustomDiscount() throws SQLException {
-        System.out.print("\nProduct ID: ");
-        int pid = Integer.parseInt(scanner.nextLine().trim());
-        System.out.print("Discount %: ");
-        double disc = Double.parseDouble(scanner.nextLine().trim());
-
-        if (disc < 0 || disc > 100) {
-            System.out.println("❌ Invalid percentage (0-100)");
-            return;
-        }
-
-        Product p = inventory.getProduct(pid);
-        if (p != null) {
-            inventory.applyDiscount(pid, disc);
-            persistChanges(pid);
-            System.out.println("✅ Custom discount applied!");
-        } else {
-            System.out.println("❌ Product not found");
-        }
-    }
-
-    private void advanceTime() {
-        System.out.print("\nDays to advance: ");
-        int days = Integer.parseInt(scanner.nextLine().trim());
-        inventory.advanceDays(days);
-        System.out.println("⏩ Simulated " + days + " days forward");
-    }
-
-    private void persistChanges(int productId) throws SQLException {
-        try (Connection conn = Database.getDBConnection()) {
-            Product p = inventory.getProduct(productId);
-            if (p != null) {
-                repo.updateProductDiscount(productId, p.appliedDiscount, conn);
-            }
-        }
-    }
 }
+

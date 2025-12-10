@@ -1,14 +1,16 @@
 package sa.edu.kau.fcit.cpit252.project.test;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import sa.edu.kau.fcit.cpit252.project.domain.Product;
-import sa.edu.kau.fcit.cpit252.project.discount.DiscountCalculator;
-import sa.edu.kau.fcit.cpit252.project.observer.InventoryManager;
-
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import sa.edu.kau.fcit.cpit252.project.discount.DiscountCalculator;
+import sa.edu.kau.fcit.cpit252.project.domain.Product;
+import sa.edu.kau.fcit.cpit252.project.observer.InventoryManager;
 
 public class DiscountCalculatorTest {
     private Product milk;
@@ -104,10 +106,7 @@ public class DiscountCalculatorTest {
         boolean discountApplied = false;
         boolean dayAdvanced = false;
 
-        @Override
-        public void onHighRiskDetected(Product p, LocalDate today) {
-            highRiskDetected = true;
-        }
+        
 
         @Override
         public void onDiscountApplied(Product p, double percentage) {
